@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-console.log("Ciao");
+console.log("Test");
