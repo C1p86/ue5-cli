@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,5 +17,10 @@
     "url": "https://github.com/C1p86/ue5-cli/issues"
   },
   "homepage": "https://github.com/C1p86/ue5-cli#readme",
-  "bin": "./cli.js"
+  "bin": "./cli.js",
+  "dependencies": {
+    "consola": "^3.2.3",
+    "minimist": "^1.2.8",
+    "shelljs": "^0.8.5"
+  }
 }
