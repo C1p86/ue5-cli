@@ -16,5 +16,5 @@
     "url": "https://github.com/C1p86/ue5-cli/issues"
   },
   "homepage": "https://github.com/C1p86/ue5-cli#readme",
-  "bin": "index.js"
+  "bin": "node index.js"
 }
