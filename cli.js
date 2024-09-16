@@ -12,6 +12,42 @@ import { consola, createConsola } from "consola";
 import shell from 'shelljs';
 import minimist from 'minimist';
 
+import { Command } from 'commander';
+const program = new Command();
+
+var UE5_PATH = "e:/UE_5.1_Oculus/"
+var UE5_PATH_UNREALENGINE = UE5_PATH + "Engine/Binaries/Win64/UnrealEngine.exe";
+var UE5_PATH_RUNUAT = UE5_PATH + "Engine/Build/BatchFiles/RunUAT.bat";
+var DEFAULT_BUILD_DIRECTORY = "d:/Build";
+
+program
+    .name('ue5-cli')
+    .description('CLI for Unreal Engine 5')
+    .version('0.0.1');
+
+program.command('split')
+    .description('Split a string into substrings and display as an array')
+    .argument('<string>', 'string to split')
+    .option('--first', 'display just the first substring')
+    .option('-s, --separator <char>', 'separator character', ',')
+    .action((str, options) => {
+        const limit = options.first ? 1 : undefined;
+        console.log(str.split(options.separator, limit));
+    });
+
+program.command('build')
+    .description('Build project')
+    .argument('<project>', 'project to build')
+    .argument('[platform]', 'target platform', 'Android')
+    .argument('[config]', 'build configuration', 'Release')
+    .action((proj, platform, config, options) => {
+        console.log(`Building ${proj} in ${config} mode`);
+        const script=`${UE5_PATH_RUNUAT} -ScriptsForProject=\"${proj}\" Turnkey -command=VerifySdk -platform=${platform} -UpdateIfNeeded -EditorIO -EditorIOPort=53006  -project=\"${proj}\" BuildCookRun -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook  -project=\"${proj}\" -target=EpykaQuest  -unrealexe=\"${UE5_PATH_UNREALENGINE}\" -platform=${platform} -installed -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory=\"${DEFAULT_BUILD_DIRECTORY}\" -clientconfig=Shipping -nodebuginfo\" -nocompile -nocompileuat`;
+        console.log(script);
+        shell.exec(script);
+    })
+
+program.parse();
 
 //consola.info("Using consola 3.0.0");
 //consola.start("Building project...");
@@ -22,6 +58,7 @@ import minimist from 'minimist';
 
 //console.log(process.argv);
 
+/*
 var argv = minimist(process.argv.slice(2));
 
 argv["ue"]==undefined ? argv["ue"] = "main" : null;
@@ -37,6 +74,7 @@ switch (argv._[0]) {
             createModule(argv._[1]);
             break;
 }
+            */
 
 
 //------------------------------------------------------------

@@ -2,7 +2,7 @@
   "name": "ue5-cli",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "cli.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/C1p86/ue5-cli#readme",
   "bin": "./cli.js",
   "dependencies": {
+    "command.js": "^0.0.1",
     "consola": "^3.2.3",
     "minimist": "^1.2.8",
     "node-stream-zip": "^1.15.0",
