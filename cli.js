@@ -10,7 +10,7 @@ import StreamZip  from 'node-stream-zip';
 
 import { consola, createConsola } from "consola";
 import shell from 'shelljs';
-import minimist from 'minimist';
+//import minimist from 'minimist';
 
 import { Command } from 'commander';
 const program = new Command();
