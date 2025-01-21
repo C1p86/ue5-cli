@@ -7,23 +7,36 @@ import StreamZip  from 'node-stream-zip';
 
 
 
-
 import { consola, createConsola } from "consola";
 import shell from 'shelljs';
 //import minimist from 'minimist';
+
+import { iterateFilesSync } from './fileHelper.mjs';
+
 
 import { Command } from 'commander';
 const program = new Command();
 
 var UE5_PATH = "e:/UE_5.1_Oculus/"
-var UE5_PATH_UNREALENGINE = UE5_PATH + "Engine/Binaries/Win64/UnrealEngine.exe";
+var UE5_PATH_UNREALENGINE = UE5_PATH + "Engine/Binaries/Win64/UnrealEditor.exe";
+var UE5_PATH_UNREALENGINE_CMD = UE5_PATH + "Engine/Binaries/Win64/UnrealEditor-Cmd.exe";
 var UE5_PATH_RUNUAT = UE5_PATH + "Engine/Build/BatchFiles/RunUAT.bat";
 var DEFAULT_BUILD_DIRECTORY = "d:/Build";
+
+shell.exec("echo %cd%");
 
 program
     .name('ue5-cli')
     .description('CLI for Unreal Engine 5')
     .version('0.0.1');
+
+program.command("set")
+    .argument('<variable>', 'variable to set')
+    .argument('<value>', 'value to assign')
+    .action((variable, value) => {
+        localStorage[variable] = value;
+        console.log(`${variable} set to ${localStorage[variable]}`);
+    });
 
 program.command('split')
     .description('Split a string into substrings and display as an array')
@@ -35,11 +48,11 @@ program.command('split')
         console.log(str.split(options.separator, limit));
     });
 
-program.command('build')
+program.command('package')
     .description('Build project')
-    .argument('<project>', 'project to build')
+    .argument('<project>', 'project to package')
     .argument('[platform]', 'target platform', 'Android')
-    .argument('[config]', 'build configuration', 'Release')
+    .argument('[config]', 'package configuration', 'Release')
     .action((proj, platform, config, options) => {
         console.log(`Building ${proj} in ${config} mode`);
         const script=`${UE5_PATH_RUNUAT} -ScriptsForProject=\"${proj}\" Turnkey -command=VerifySdk -platform=${platform} -UpdateIfNeeded -EditorIO -EditorIOPort=53006  -project=\"${proj}\" BuildCookRun -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook  -project=\"${proj}\" -target=EpykaQuest  -unrealexe=\"${UE5_PATH_UNREALENGINE}\" -platform=${platform} -installed -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory=\"${DEFAULT_BUILD_DIRECTORY}\" -clientconfig=Shipping -nodebuginfo\" -nocompile -nocompileuat`;
@@ -47,7 +60,35 @@ program.command('build')
         shell.exec(script);
     })
 
+program.command('build')
+    .description('Build selected map')
+    .argument('<project>', 'project to build')
+    .argument('<map>', 'map to build')
+    .action((proj, map, options) => {
+        buildMap(proj, map);
+
+    })
+
+program.command('BuildOW')
+    .action(() => {
+        iterateFilesSync(`${process.env.WORKSPACE}/Content/Epyka2/Maps/OpenWorldTest/`, ".umap", true).forEach(file => {
+            
+            file = file.replaceAll("\\", "/");
+            file = file.replace(".umap", "");
+            file = file.split("/Content/");
+            file = "/Game/"+file[1];
+
+            buildMap("%WORKSPACE%/EpykaQuest.uproject", file);
+        })
+    });
 program.parse();
+
+function buildMap(proj, map) {
+    console.log(`Building map ${map} in ${proj}`);
+    //const script=`${UE5_PATH_UNREALENGINE} ${proj} ${map} -AutomatedMapBuild UseSCC=true > %cd%/ue-cli.log 2>&1`;
+    const script=`${UE5_PATH_UNREALENGINE_CMD} ${proj} -run=resavepackages -buildlighting -MapsOnly -ProjectOnly -AllowCommandletRendering -Map=${map} -Log=ue5cli.log > %cd%/ue-cli.log 2>&1`;
+    shell.exec(script);
+}
 
 //consola.info("Using consola 3.0.0");
 //consola.start("Building project...");
