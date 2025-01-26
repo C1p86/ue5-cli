@@ -5,17 +5,19 @@ import fs from 'fs';
 
 import StreamZip  from 'node-stream-zip';
 
+import { iterateFilesSync } from './fileHelper.mjs';
 
+import {Settings} from "./settings.mjs";
+import {Project} from "./project.mjs";
 
 import { consola, createConsola } from "consola";
 import shell from 'shelljs';
-//import minimist from 'minimist';
-
-import { iterateFilesSync } from './fileHelper.mjs';
 
 
-import { Command } from 'commander';
-const program = new Command();
+
+
+
+import { program } from 'commander';
 
 var UE5_PATH = "e:/UE_5.1_Oculus/"
 var UE5_PATH_UNREALENGINE = UE5_PATH + "Engine/Binaries/Win64/UnrealEditor.exe";
@@ -23,21 +25,21 @@ var UE5_PATH_UNREALENGINE_CMD = UE5_PATH + "Engine/Binaries/Win64/UnrealEditor-C
 var UE5_PATH_RUNUAT = UE5_PATH + "Engine/Build/BatchFiles/RunUAT.bat";
 var DEFAULT_BUILD_DIRECTORY = "d:/Build";
 
-shell.exec("echo %cd%");
+//shell.exec("echo %cd%");
 
 program
     .name('ue5-cli')
     .description('CLI for Unreal Engine 5')
     .version('0.0.1');
 
-program.command("set")
-    .argument('<variable>', 'variable to set')
-    .argument('<value>', 'value to assign')
-    .action((variable, value) => {
-        localStorage[variable] = value;
-        console.log(`${variable} set to ${localStorage[variable]}`);
+program.command('getUeVersion')
+    .description('Get Unreal Engine version')
+    .argument('<project>', 'project to package')
+    .action((project) => {
+        console.log(Project.getUeVersion(project));
     });
 
+/*
 program.command('split')
     .description('Split a string into substrings and display as an array')
     .argument('<string>', 'string to split')
@@ -47,6 +49,7 @@ program.command('split')
         const limit = options.first ? 1 : undefined;
         console.log(str.split(options.separator, limit));
     });
+*/
 
 program.command('package')
     .description('Build project')
@@ -55,7 +58,9 @@ program.command('package')
     .argument('[config]', 'package configuration', 'Release')
     .action((proj, platform, config, options) => {
         console.log(`Building ${proj} in ${config} mode`);
-        const script=`${UE5_PATH_RUNUAT} -ScriptsForProject=\"${proj}\" Turnkey -command=VerifySdk -platform=${platform} -UpdateIfNeeded -EditorIO -EditorIOPort=53006  -project=\"${proj}\" BuildCookRun -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook  -project=\"${proj}\" -target=EpykaQuest  -unrealexe=\"${UE5_PATH_UNREALENGINE}\" -platform=${platform} -installed -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory=\"${DEFAULT_BUILD_DIRECTORY}\" -clientconfig=Shipping -nodebuginfo\" -nocompile -nocompileuat`;
+        let UE_PATH = Settings.getUePath(Project.getUeVersion(proj));
+        let UPROJECT = Project.GetUprojectFilePath(proj);
+        const script=`${UE_PATH}/Engine/Build/BatchFiles/RunUAT.bat -ScriptsForProject=\"${UPROJECT}\" Turnkey -command=VerifySdk -platform=${platform} -UpdateIfNeeded -EditorIO -EditorIOPort=53006  -project=\"${UPROJECT}\" BuildCookRun -nop4 -utf8output -nocompileeditor -skipbuildeditor -cook  -project=\"${UPROJECT}\" -target=EpykaQuest  -unrealexe=\"${UE_PATH}/Engine/Binaries/Win64/UnrealEditor-cmd.exe\" -platform=${platform} -installed -stage -archive -package -build -pak -iostore -compressed -prereqs -archivedirectory=\"${Settings.GetConfig().default_build_path}\" -clientconfig=Shipping -nodebuginfo\" -nocompile -nocompileuat`;
         console.log(script);
         shell.exec(script);
     })

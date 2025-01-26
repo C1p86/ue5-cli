@@ -20,7 +20,10 @@
   "bin": "./cli.js",
   "dependencies": {
     "command.js": "^0.0.1",
+    "commander": "^13.1.0",
+    "conf": "^13.1.0",
     "consola": "^3.2.3",
+    "inquirer": "^12.3.2",
     "minimist": "^1.2.8",
     "node-stream-zip": "^1.15.0",
     "shelljs": "^0.8.5"
