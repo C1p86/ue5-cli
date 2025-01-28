@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { program } from 'commander';
 import {Settings} from "./settings.mjs";
 
 class Project_C {
@@ -27,7 +28,8 @@ class Project_C {
 
     GetUProject(projectPath) {
         var UProject = "";
-        fs.readdirSync(projectPath).forEach(file => {
+        let files = fs.readdirSync(projectPath);
+        files.forEach(file => {
             if (path.extname(file) === ".uproject") {
                 var obj = JSON.parse(fs.readFileSync(projectPath + '/' + file, 'utf8'));
                 UProject = obj;
@@ -37,11 +39,30 @@ class Project_C {
     }
 
     getUeVersion(projectPath) {
-        return this.GetUProject(projectPath).EngineAssociation;
+        return {
+            ProjectPath: projectPath,
+            EngineVersion: this.GetUProject(projectPath).EngineAssociation
+        };
     }
 
 };
 
 let Project = new Project_C();
+
+program.command('getUeVersion')
+    .description('Get Unreal Engine version')
+    .option('-p', '--project <project>', Settings.GetConfig().defaultProjectPath)
+    .action((options) => {
+        console.log(Project.getUeVersion(options.p));
+    });
+
+
+
+    program.command('getUProject')
+    .description('Get Unreal Engine Uproject')
+    .option('-p', '--project <project>', Settings.GetConfig().defaultProjectPath)
+    .action((options) => {
+        console.log(Project.GetUProject(options.p));
+    });
 
 export {Project};

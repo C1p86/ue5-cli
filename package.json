@@ -19,13 +19,17 @@
   "homepage": "https://github.com/C1p86/ue5-cli#readme",
   "bin": "./cli.js",
   "dependencies": {
+    "chalk": "^5.4.1",
     "command.js": "^0.0.1",
     "commander": "^13.1.0",
     "conf": "^13.1.0",
     "consola": "^3.2.3",
     "inquirer": "^12.3.2",
     "minimist": "^1.2.8",
+    "node-exec": "^0.1.1",
     "node-stream-zip": "^1.15.0",
+    "ora": "^8.1.1",
+    "regedit": "github:C1p86/node-regedit",
     "shelljs": "^0.8.5"
   }
 }

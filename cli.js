@@ -32,12 +32,7 @@ program
     .description('CLI for Unreal Engine 5')
     .version('0.0.1');
 
-program.command('getUeVersion')
-    .description('Get Unreal Engine version')
-    .argument('<project>', 'project to package')
-    .action((project) => {
-        console.log(Project.getUeVersion(project));
-    });
+
 
 /*
 program.command('split')
@@ -166,7 +161,7 @@ async function createModule(moduleName) {
     } else {
         //TODO: rinominare cartelle, file e nomi interni
         iterateOnFiles(moduleName, (file) => {
-            console.log(file);
+            console.log("iterateOnFiles - Curr file:", file);
         })
 
         consola.success("Project created in " + moduleName);
@@ -175,7 +170,7 @@ async function createModule(moduleName) {
 
 function isProjectDirectory() {
     var result = shell.find('-maxdepth 0', '.').filter(function(file) { return file.match(/\.uproject$/); });
-    console.log(result);
+    console.log("isProjectDirectory:", result);
     return result.length===1;
 }
 
