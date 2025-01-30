@@ -13,6 +13,8 @@ import {Project} from "./project.mjs";
 import { consola, createConsola } from "consola";
 import shell from 'shelljs';
 
+import { Lights } from './lights.mjs';
+
 
 
 

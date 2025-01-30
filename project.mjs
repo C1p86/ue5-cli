@@ -8,13 +8,51 @@ class Project_C {
     constructor() {
     }
 
+    existsFileWithExtension(directory, ext) {
+        if (ext[0] !== '.')  ext = '.' + ext;
+        ext = ext.toLowerCase().trim();
+        if (!fs.existsSync(directory)) {
+            return false;
+        }
+    
+        const files = fs.readdirSync(directory);
+        return files.some(file => path.extname(file).toLowerCase() === ext);
+    }
+
+    getUProjectFilePath(projectPath) {
+        if (ext[0] !== '.')  ext = '.' + ext;
+        ext = ext.toLowerCase().trim();
+        if (!fs.existsSync(directory)) {
+            return false;
+        }
+        const files = fs.readdirSync(directory);
+        files.forEach(file => {
+            if (path.extname(file).toLowerCase() === ext) {
+                console.log("AAA", path.normalize(directory + '/' + file) );
+            }
+        });
+        return false;
+    }
+
     checkIfProjectPathIsValid(projectPath) {
-        if(fs.existsSync(projectPath + "/*.uproject")) {
+        if(this.existsFileWithExtension(projectPath, "uproject")) {
             Settings.addProject(projectPath);
             return true;
         }
         return false;
     };
+
+    async getUePathPerProject(projectPath) {
+        if (this.checkIfProjectPathIsValid(projectPath)) {
+            return await Settings.getUePath(await this.getUeVersion(projectPath).EngineVersion);
+        }
+        return false;
+    }
+
+    getUProject(projectPath) {
+        if (this.checkIfProjectPathIsValid(projectPath)) {
+        }
+    }
 
     GetUprojectFilePath(projectPath) {
         var UProject = "";
@@ -38,10 +76,12 @@ class Project_C {
         return UProject;
     }
 
-    getUeVersion(projectPath) {
+    async getUeVersion(projectPath) {
+        console.log("Getting UE version for project", projectPath);
+        const engineVersion = await this.GetUProject(projectPath).EngineAssociation;
         return {
             ProjectPath: projectPath,
-            EngineVersion: this.GetUProject(projectPath).EngineAssociation
+            EngineVersion: engineVersion
         };
     }
 

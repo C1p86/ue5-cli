@@ -75,7 +75,7 @@ const schema = {
             });
         }
         if (!path) {
-            inquirer
+            await inquirer
             .prompt([
             {
                 type: "input",
@@ -84,11 +84,12 @@ const schema = {
             },
             ])
             .then((answers) => {
+                console.log("A", answers);
                 path = answers.path;
             });
         }
         if (!version || !path) {
-            console.log("Version and path are required");
+            console.log("Version and path are required", version, path);
             return false;
         }
 
@@ -104,7 +105,7 @@ const schema = {
                 if (showSpinner) spinner = ora(`Adding ${version}: ${path} to Windows Registry...`).start(); // Start the spinner
                 await regedit.promisified.putValue(key);
                 if (showSpinner) spinner.succeed(`Added ${version}: ${path} to Windows Registry!`); // Stop the spinner
-                return true; //TODO check if it was successful
+                return path; //TODO check if it was successful
                 break;
             default:
                 console.log("Function only implemented for windows");
@@ -207,10 +208,10 @@ const schema = {
     }
 
     async getUePath(version) {
-        if (getUePath[version]) {
-            return getUePath[version];
+        if (this.getUePath[version]) {
+            return await this.getUePath[version];
         } else {
-            this.addUePathInteractive(version);
+            return await this.addUePath(version);
         }
     }
 
